@@ -1,6 +1,5 @@
 # Yocto tutorials
 
-
 The main building blocks for Embedded linux:
 1. Bootloader(s)
 2. Kernel (linux)
@@ -30,6 +29,7 @@ Example: How to build a kernel: defines which config file  for make defconfig, e
 
 The `conf` files can be found [here](./conf/).
 
+0. This repo has oe, bsp, poky as submodules, however, it can be setup the following way:
 1. Clone poky repo: git clone https://git.yoctoproject.org/poky/ -b <branch>
 2. Setup poky shell env:
       ```
