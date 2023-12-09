@@ -8,7 +8,7 @@ The main building blocks for Embedded Linux:
 5. The Hardware of course
 
 
-## What is Yocto project?
+## What is the Yocto project?
 
 An OSS by Linux Foundation provides tools that help create a custom embedded Linux distribution across various hardwares, vendors, manufacturers, etc.
 It takes configs as input and produces image(s) for the above building blocks.
@@ -73,7 +73,7 @@ The `conf` files can be found [here](./conf/).
    ** Notes on BSP layer **
    - All details of the layer are always under README.md :P, like it's dependent layers, etc, how to build, flash, tools etc.
    - A BSP layer defines different supported machines under meta-<any-bsp-layer>/conf/machine/<Machines>.conf
-   - Possible build image types are at  meta-<any-bsp-layer>/recipes-core/images/*.bb. For example, rpi-hwup-image.bb is for basic hardware up and  (deprecated now, use core-image-base), recipes-core/images/rpi-basic-image.bb with additional features like ssh server, etc. and so on. Test image: recipes-core/images/rpi-test-image.bb.
+   - Possible build image types or targets are at  meta-<any-bsp-layer>/recipes-core/images/*.bb. For example, rpi-hwup-image.bb is for basic hardware up and  (deprecated now, use core-image-base), recipes-core/images/rpi-basic-image.bb with additional features like ssh server, etc. and so on. Test image: recipes-core/images/rpi-test-image.bb.
    - 
    
 7. For enabling ssh, wifi, bt, appending the following to local.conf:
@@ -137,3 +137,6 @@ The `conf` files can be found [here](./conf/).
    BB_NUMBER_THREADS = "<number of threads>"
    PARALLEL_MAKE = "-j <number of threads>"
    ```
+12. To get the env of the build image, `bitbake -e <image>` and grep the variable.
+    Example: to check the IMAGE_ROOTFS_EXTRA_SPACE in RPI context:  `bitbake -e <target> | grep "IMAGE_ROOTFS_EXTRA_SPACE"`
+    This parameter helps to extend the size of RFS. Add it in local.conf. The unit is bytes. For 8GB: 8x1024x1024.
