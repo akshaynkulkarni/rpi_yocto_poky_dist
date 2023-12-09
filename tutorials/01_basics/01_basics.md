@@ -1,27 +1,27 @@
 # Yocto tutorials
 
-The main building blocks for Embedded linux:
+The main building blocks for Embedded Linux:
 1. Bootloader(s)
-2. Kernel (linux)
+2. Kernel (Linux)
 3. RootFS: libs and bins.
 4. Toolchain
-5. The Hardware ofcourse
+5. The Hardware of course
 
 
-## What is yocto project?
+## What is Yocto project?
 
-An OSS by linux foundation, that provides tools that help to create a custom embedded linux distribution, across various hardwares, vendors, manufacturers, etc.
+An OSS by Linux Foundation provides tools that help create a custom embedded Linux distribution across various hardwares, vendors, manufacturers, etc.
 It takes configs as input and produces image(s) for the above building blocks.
 
-Yocto project (YP) has reference distribution called "poky", that has following components as repos:
+Yocto Project (YP) has a reference distribution called "poky", that has the following components as repos:
 
 1. oe-core (meta): OpenEmbedded core, offers core meta-data for various arches, features etc
-2. Bitbake: pocky's (multi-threaded) build system, py and shell scripts. Process recpies: fetch pkgs, build and image gen.
+2. Bitbake: pocky's (multi-threaded) build system, py and shell scripts. Process recipes: fetch pkgs, build and image gen.
 3. meta-yocto-bsp: BSP
 
 ### Meta-data:
-In the context of yocto, its basically build instructions, it has config files (.config), recipies (.bb, .bbapend), recipie classes (.bbclasses) and includes (.inc);
-Build instr has versions of sw and fetch details of them and additional patches to be applied on.
+In the context of Yocto, it is build instructions, it has config files (.config), recipes (.bb, .bbapend), recipe classes (.bbclasses) and includes (.inc);
+Build instr has versions of sw and fetches details of them and additional patches to be applied on.
 Example: How to build a kernel: defines which config file  for make defconfig, etc; Additional custom patches for project or board, etc
 
 
@@ -29,7 +29,7 @@ Example: How to build a kernel: defines which config file  for make defconfig, e
 
 The `conf` files can be found [here](./conf/).
 
-0. This repo has oe, bsp, poky as submodules, however, it can be setup the following way:
+0. This repo has oe, BSP, poky as submodules, however, it can be setup the following way:
 1. Clone poky repo: git clone https://git.yoctoproject.org/poky/ -b <branch>
 2. Setup poky shell env:
       ```
@@ -37,8 +37,8 @@ The `conf` files can be found [here](./conf/).
       or
       source oe-init-build-env <build_dir>
       ```
-   Now, under build dir, we have generated conf/local.conf and bblayers.cfg
-3. For BSP layer of RPI boards,
+   Under the build dir, we have generated conf/local.conf and bblayers.cfg
+3. For the BSP layer of RPI boards,
    ```
    git clone https://git.yoctoproject.org/meta-raspberrypi
    ```
@@ -46,7 +46,7 @@ The `conf` files can be found [here](./conf/).
    ```
    git clone git@github.com:openembedded/meta-openembedded.git
    ```
-5. In order for the poky to recognize rpi, we have to append
+5. For the poky to recognize RPI, we have to append
    1. `MACHINE ??= "raspberrypi3"` in build/conf/local.conf
    2. build/conf/bblayers.conf: add RPI BSP layer (meta-raspberrypi) path to BBLAYERS.
 
@@ -62,7 +62,21 @@ The `conf` files can be found [here](./conf/).
       "
    ```
 
-6. For enabling ssh, wifi, bt, appending the following to local.conf:
+   OR
+   with use bitbake script:
+   ```shell
+      bitbake-layers add-layer <layer-location>
+   ```
+   A layer must contain conf/layer.conf to be added to bitbake layers. One can remove layer using  option `remove-layer`
+   and to display `show-layers`, create with `create-layer`. Use `bitbake-layers -h` for help.
+
+   ** Notes on BSP layer **
+   - All details of the layer are always under README.md :P, like it's dependent layers, etc, how to build, flash, tools etc.
+   - A BSP layer defines different supported machines under meta-<any-bsp-layer>/conf/machine/<Machines>.conf
+   - Possible build image types are at  meta-<any-bsp-layer>/recipes-core/images/*.bb. For example, rpi-hwup-image.bb is for basic hardware up and  (deprecated now, use core-image-base), recipes-core/images/rpi-basic-image.bb with additional features like ssh server, etc. and so on. Test image: recipes-core/images/rpi-test-image.bb.
+   - 
+   
+7. For enabling ssh, wifi, bt, appending the following to local.conf:
 
    ```shell
    DISTRO_FEATURES_append = " \
@@ -92,11 +106,12 @@ The `conf` files can be found [here](./conf/).
    ```
 
 
-7. Build minimal image and install on sdcard:
+8. Build a minimal image and install on sdcard:
    ```
    bitbake core-image-minimal
    ```
-   The image is generated at `<path>/yocto/poky/build/tmp/deploy/images/raspberrypi3-64`, image is `core-image-minimal-raspberrypi3-64-xxyyzzaa.rootfs.wic.bz2`
+   The image is generated at `<path>/yocto/poky/build/tmp/deploy/images/<machine>`, image is `core-image-minimal-raspberrypi3-64.tar.bz2`, a symlink to
+   `core-image-minimal-raspberrypi3-64-xxyyzzaa.rootfs.wic.bz2`. There are base files including device tree blob, kernel image, RFS symlinked to current build.
 
    extract the image:
    ```shell
@@ -106,9 +121,9 @@ The `conf` files can be found [here](./conf/).
    ```shell
    sudo dd bs=4M if=core-image-minimal-raspberrypi3-64-xxyyzzaa.rootfs.wic of=/dev/<device> status=progress conv=fsync
    ```
+   Tip: after sourcing Yocto env, one can use `wic ls <wic-image>` to list all the partitions under that wic image.
 
-
-8. Build the cross compiler toolchain:
+10. Build the cross compiler toolchain:
 
    ```
    bitbake meta-toolchain
@@ -117,7 +132,7 @@ The `conf` files can be found [here](./conf/).
 
    Example: `poky-glibc-x86_64-meta-toolchain-aarch64-raspberrypi3-64-toolchain-3.1.29.sh`
 
-9. Additional: Append the following in local.conf
+11. Additional: Append the following in local.conf
    ```shell
    BB_NUMBER_THREADS = "<number of threads>"
    PARALLEL_MAKE = "-j <number of threads>"
